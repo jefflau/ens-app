@@ -28,7 +28,7 @@ jobs:
       before_script:
         - ganache-cli >ganache.log 2>&1 &
         - sleep 5
-      script: 'yarn cypress:ci'
+      script: 'yarn cypress:run'
     - stage: deploy
       name: 'Deploy to live'
       script: yarn deploy
