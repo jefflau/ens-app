@@ -353,8 +353,8 @@ export default ({ match }) => {
     }
     if (network) {
       switchNetwork(network.chainId)
+      location.reload()
     }
-    location.reload()
   }
 
   const handleDisconnect = async () => {
