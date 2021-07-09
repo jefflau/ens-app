@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import AddToCalendarHOC from 'react-add-to-calendar-hoc'
 import Dropdown from './Dropdown'
 import DefaultButton from '../Forms/Button'
@@ -27,13 +27,13 @@ const Button = styled(DefaultButton)`
   }
 `
 
-const CalendarButton = props => (
-  <Button type="hollow-primary" {...props}>
+const CalendarButton = forwardRef((props, ref) => (
+  <Button type="hollow-primary" ref={ref} {...props}>
     <img src={calendar} alt="calendar icon" />
     &nbsp;
     {props.children}
   </Button>
-)
+))
 
 function CalendarInvite({ noMargin, dropDownLinks = [], event, invalid }) {
   const { t } = useTranslation()

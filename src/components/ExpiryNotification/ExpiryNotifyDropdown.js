@@ -14,11 +14,12 @@ const ExpiryNotifyDropdownContainer = styled('div')`
 
 export default function ExpiryNotifyDropdown({ address }) {
   const dropdownRef = createRef()
+  const togglerRef = createRef()
   const [showDropdown, setShowDropdown] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const { t } = useTranslation()
 
-  useOnClickOutside(dropdownRef, () => setShowDropdown(false))
+  useOnClickOutside([dropdownRef, togglerRef], () => setShowDropdown(false))
 
   const handleDropdownClick = () => {
     setShowDropdown(value => !value)
@@ -35,7 +36,7 @@ export default function ExpiryNotifyDropdown({ address }) {
 
   return (
     <ExpiryNotifyDropdownContainer>
-      <CalendarButton onClick={handleDropdownClick}>
+      <CalendarButton ref={togglerRef} onClick={handleDropdownClick}>
         {t('expiryNotification.reminder')}
       </CalendarButton>
       {showDropdown && (

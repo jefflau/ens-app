@@ -134,13 +134,14 @@ function getLanguageFromLocalStorage() {
 
 export default function LanguageSwitcher() {
   const dropdownRef = createRef()
+  const togglerRef = createRef()
   const [languageSelected, setLanguageSelected] = useState(
     getLang(getLanguageFromLocalStorage()) ?? getLang('en')
   )
   const [showDropdown, setShowDropdown] = useState(false)
   const { i18n } = useTranslation()
 
-  useOnClickOutside(dropdownRef, () => setShowDropdown(false))
+  useOnClickOutside([dropdownRef, togglerRef], () => setShowDropdown(false))
 
   function changeLanguage(language) {
     setLanguageSelected(language)
@@ -151,7 +152,10 @@ export default function LanguageSwitcher() {
 
   return (
     <LanguageSwitcherContainer>
-      <ActiveLanguage onClick={() => setShowDropdown(show => !show)}>
+      <ActiveLanguage
+        ref={togglerRef}
+        onClick={() => setShowDropdown(show => !show)}
+      >
         <span>{languageSelected.value}</span>
         <RotatingSmallCaret
           start="top"

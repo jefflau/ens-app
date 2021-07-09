@@ -227,11 +227,14 @@ export function useBlock() {
   }
 }
 
-export function useOnClickOutside(ref, handler) {
+export function useOnClickOutside(refs = [], handler) {
   useEffect(() => {
     const listener = event => {
-      if (!ref.current || ref.current.contains(event.target)) {
-        return
+      // Do nothing if any of given refs or descendants are clicked
+      for (let i = 0; i < refs.length; i++) {
+        if (!refs[i].current || refs[i].current.contains(event.target)) {
+          return
+        }
       }
       handler(event)
     }
@@ -243,5 +246,5 @@ export function useOnClickOutside(ref, handler) {
       document.removeEventListener('mousedown', listener)
       document.removeEventListener('touchstart', listener)
     }
-  }, [ref, handler])
+  }, [refs, handler])
 }
