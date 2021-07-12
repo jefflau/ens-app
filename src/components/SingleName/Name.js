@@ -14,7 +14,6 @@ import Tabs from './Tabs'
 import { useAccount } from '../QueryAccount'
 import NameContainer from '../Basic/MainContainer'
 import Copy from '../CopyToClipboard/'
-import useNetworkInfo from '../NetworkInformation/useNetworkInfo'
 
 const Owner = styled('div')`
   color: #ccd4da;
@@ -55,7 +54,6 @@ function isOwnerOfParentDomain(domain, account) {
 }
 
 function Name({ details: domain, name, pathname, type, refetch }) {
-  const { networkId } = useNetworkInfo()
   const { t } = useTranslation()
   const smallBP = useMediaMin('small')
   const percentDone = 0

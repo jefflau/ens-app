@@ -2,18 +2,10 @@ import { encodeContenthash, isValidContenthash } from '@ensdomains/ui'
 import { addressUtils } from 'utils/utils'
 import { formatsByName } from '@ensdomains/address-encoder'
 
-export function validateRecord({ type, value, contentType, selectedKey }) {
-  if (!type) return false
-  if (!value) return false
-  if (type === 'content' && contentType === 'oldcontent') {
-    return value.length > 32
-  }
-
-  switch (type) {
-    case 'address':
-      const isAddress = addressUtils.isAddress(value)
-      return isAddress
-    case 'content':
+export function validateRecord({ key, value, contractFn }) {
+  if (!value) return true
+  switch (contractFn) {
+    case 'setContenthash':
       if (value === EMPTY_ADDRESS) return true // delete record
       const { encoded, error: encodeError } = encodeContenthash(value)
       if (!encodeError && encoded) {
@@ -21,15 +13,15 @@ export function validateRecord({ type, value, contentType, selectedKey }) {
       } else {
         return false
       }
-    case 'textRecords':
+    case 'setText':
       return true
-    case 'coins':
+    case 'setAddr(bytes32,uint256,bytes)':
       if (value === '') return false
-      if (selectedKey === 'ETH') {
+      if (key === 'ETH') {
         return addressUtils.isAddress(value)
       }
       try {
-        formatsByName[selectedKey].decoder(value)
+        formatsByName[key].decoder(value)
         return true
       } catch {
         return false
@@ -41,14 +33,12 @@ export function validateRecord({ type, value, contentType, selectedKey }) {
 
 export function getPlaceholder(recordType, contentType) {
   switch (recordType) {
-    case 'address':
-      return 'Enter an Ethereum address'
-    case 'content':
-      if (contentType === 'contenthash') {
-        return 'Enter a content hash (eg: /ipfs/..., ipfs://..., /ipns/..., ipns://..., bzz://..., onion://..., onion3://..., sia://...)'
-      } else {
-        return 'Enter a content'
-      }
+    case 'setAddr(bytes32,uint256,bytes)':
+      return `Enter a ${contentType} address`
+    case 'setContenthash':
+      return 'Enter a content hash (eg: /ipfs/..., ipfs://..., /ipns/..., ipns://..., bzz://..., onion://..., onion3://..., sia://...)'
+    case 'setText':
+      return `Enter ${contentType}`
     default:
       return ''
   }
@@ -59,3 +49,9 @@ export const EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000'
 export function isEmptyAddress(address) {
   return parseInt(address) === 0
 }
+
+export const createRecord = (contractFn, key, value) => ({
+  contractFn,
+  key,
+  value
+})

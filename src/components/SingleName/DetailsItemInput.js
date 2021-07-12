@@ -13,7 +13,8 @@ const DetailsItemInput = ({
   isInvalid,
   dataType,
   contentType,
-  placeholder
+  placeholder,
+  newValue
 }) => {
   return (
     <Input
@@ -24,6 +25,7 @@ const DetailsItemInput = ({
       onChange={e => {
         updateValue(e.target.value)
       }}
+      value={newValue}
     />
   )
 }

@@ -364,13 +364,13 @@
         "registrant": "당신이 등록자이고 지갑에 로그인한 경우에만 등록자 이전이 가능합니다.",
         "registrantExpired": "만료된 도메인은 이전이 불가능합니다. 먼저 갱신해 주세요."
       }
-    },
-    "warnings": {
-      "homoglyph": {
-        "content": "This name contains non-ASCII characters. Please be aware that there are characters that look identical or very similar to English letters, especially characters from Cyrillic and Greek. Also, traditional Chinese characters can look identical or very similar to simplified variants. For more information, please see this",
-        "link": "Wikipedia article",
-        "title": "ATTENTION"
-      }
+    }
+  },
+  "warnings": {
+    "homoglyph": {
+      "content": "This name contains non-ASCII characters. Please be aware that there are characters that look identical or very similar to English letters, especially characters from Cyrillic and Greek. Also, traditional Chinese characters can look identical or very similar to simplified variants. For more information, please see this",
+      "link": "Wikipedia article",
+      "title": "ATTENTION"
     }
   }
 }

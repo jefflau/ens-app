@@ -9,9 +9,6 @@ import searchIcon from '../../assets/search.svg'
 import mq from 'mediaQuery'
 import LanguageSwitcher from '../LanguageSwitcher'
 
-// import Caret from './Caret'
-// import Filters from './Filters'
-
 const SearchForm = styled('form')`
   display: flex;
   position: relative;
@@ -74,7 +71,6 @@ const SearchForm = styled('form')`
 function Search({ history, className, style }) {
   const { t } = useTranslation()
   const [inputValue, setInputValue] = useState(null)
-  //const [filterOpen, setFilterOpen] = useState(false)
   let input
 
   const handleParse = e => {
@@ -125,13 +121,6 @@ function Search({ history, className, style }) {
         onChange={handleParse}
       />
       <LanguageSwitcher />
-      {/* <Caret
-          up={filterOpen}
-          onClick={() =>
-            setFilterOpen(!filterOpen)
-          }
-        /> */}
-      {/* <Filters show={filterOpen} /> */}
       <button disabled={!hasSearch} type="submit">
         {t('search.button')}
       </button>

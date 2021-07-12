@@ -366,13 +366,13 @@
         "registrant": "Sie können den Registranten nur übertragen, wenn Sie der Registrant sind und in Ihr Wallet eingeloggt sind",
         "registrantExpired": "Sie können diese Domain nicht übertragen, solange diese ausgelaufen ist. Bitte verlängern Sie sie zuerst."
       }
-    },
-    "warnings": {
-      "homoglyph": {
-        "content": "This name contains non-ASCII characters. Please be aware that there are characters that look identical or very similar to English letters, especially characters from Cyrillic and Greek. Also, traditional Chinese characters can look identical or very similar to simplified variants. For more information, please see this",
-        "link": "Wikipedia article",
-        "title": "ATTENTION"
-      }
+    }
+  },
+  "warnings": {
+    "homoglyph": {
+      "content": "This name contains non-ASCII characters. Please be aware that there are characters that look identical or very similar to English letters, especially characters from Cyrillic and Greek. Also, traditional Chinese characters can look identical or very similar to simplified variants. For more information, please see this",
+      "link": "Wikipedia article",
+      "title": "ATTENTION"
     }
   }
 }

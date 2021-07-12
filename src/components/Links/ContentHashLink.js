@@ -26,7 +26,12 @@ const ContentHashLink = ({ value, contentType, domain }) => {
   if (contentType === 'oldcontent' || !value) {
     return <div>{value}</div>
   }
-  const { protocolType, decoded } = getProtocolType(value)
+
+  const rslt = getProtocolType(value)
+
+  const protocolType = rslt?.protocolType
+  const decoded = rslt?.decoded
+
   let externalLink, url
   if (protocolType === 'ipfs') {
     externalLink = `https://dweb.link/ipfs/${decoded}` // using ipfs's secured origin gateway

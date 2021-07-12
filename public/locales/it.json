@@ -366,13 +366,13 @@
         "registrant": "Puoi trasferire il registrante solo dallo stesso Registrante e se sei collegato dal tuo wallet",
         "registrantExpired": "Non puoi trasferire questo dominio mentre è scaduto. Perfavore prima rinnovalo."
       }
-    },
-    "warnings": {
-      "homoglyph": {
-        "content": "This name contains non-ASCII characters. Please be aware that there are characters that look identical or very similar to English letters, especially characters from Cyrillic and Greek. Also, traditional Chinese characters can look identical or very similar to simplified variants. For more information, please see this",
-        "link": "Wikipedia article",
-        "title": "ATTENTION"
-      }
+    }
+  },
+  "warnings": {
+    "homoglyph": {
+      "content": "This name contains non-ASCII characters. Please be aware that there are characters that look identical or very similar to English letters, especially characters from Cyrillic and Greek. Also, traditional Chinese characters can look identical or very similar to simplified variants. For more information, please see this",
+      "link": "Wikipedia article",
+      "title": "ATTENTION"
     }
   }
 }

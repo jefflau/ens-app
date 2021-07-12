@@ -362,13 +362,13 @@
         "registrant": "如果要转让域名的注册人，请先确定你登录的是该域名当前的注册人账户。",
         "registrantExpired": "该域名已经过期，无法转让，请先为其续费再进行操作。"
       }
-    },
-    "warnings": {
-      "homoglyph": {
-        "content": "This name contains non-ASCII characters. Please be aware that there are characters that look identical or very similar to English letters, especially characters from Cyrillic and Greek. Also, traditional Chinese characters can look identical or very similar to simplified variants. For more information, please see this",
-        "link": "Wikipedia article",
-        "title": "ATTENTION"
-      }
+    }
+  },
+  "warnings": {
+    "homoglyph": {
+      "content": "This name contains non-ASCII characters. Please be aware that there are characters that look identical or very similar to English letters, especially characters from Cyrillic and Greek. Also, traditional Chinese characters can look identical or very similar to simplified variants. For more information, please see this",
+      "link": "Wikipedia article",
+      "title": "ATTENTION"
     }
   }
 }

@@ -89,88 +89,52 @@ const DeleteRecord = styled('span')`
   color: red;
 `
 
+const hasChange = (changedRecords, key) => {
+  return !!changedRecords.find(el => el.key === key)
+}
+
 const Editable = ({
   editing,
   domain,
-  textKey,
   validator,
-  getPlaceholder,
-  value,
   setUpdatedRecords,
   recordType,
-  changedRecords
+  changedRecords,
+  updateRecord,
+  record,
+  placeholder
 }) => {
-  const hasBeenUpdated = changedRecords[recordType].find(
-    record => record.key === textKey
-  )
-    ? true
-    : false
-
-  let isValid = true
-  let isInvalid = false
-
-  if (validator) {
-    if (value === emptyAddress || value === '') {
-      isValid = true
-    } else {
-      isValid = validator(textKey, value)
-    }
-    isInvalid = !isValid
-  } else {
-    isValid = true
-  }
+  const { key, value } = record
+  const isValid = validator(record)
 
   return (
     <KeyValueItem editing={editing} hasRecord={true} noBorder>
       {editing ? (
         <KeyValuesContent editing={editing}>
-          <RecordsSubKey>{textKey}</RecordsSubKey>
+          <RecordsSubKey>{key}</RecordsSubKey>
           <RecordInput
-            testId={`${textKey}-record-input`}
-            hasBeenUpdated={hasBeenUpdated}
+            testId={`${key}-record-input`}
+            hasBeenUpdated={hasChange(changedRecords, key)}
             type="text"
-            isValid={isValid}
-            isInvalid={isInvalid}
+            isInvalid={!isValid}
             onChange={event => {
-              const value = event.target.value
-              setUpdatedRecords(state => ({
-                ...state,
-                [recordType]: state[recordType].map(record =>
-                  record.key === textKey
-                    ? {
-                        ...record,
-                        value,
-                        isValid: validator ? validator(textKey, value) : true
-                      }
-                    : record
-                )
-              }))
+              updateRecord({ ...record, value: event.target.value })
             }}
             value={value === emptyAddress ? '' : value}
+            {...{ placeholder, isValid }}
           />
 
           <Bin
-            data-testid={`${textKey}-record-delete`}
-            onClick={() =>
-              setUpdatedRecords(state => ({
-                ...state,
-                [recordType]: state[recordType].map(record =>
-                  record.key === textKey
-                    ? {
-                        ...record,
-                        value: '',
-                        isValid: validator ? validator(textKey, value) : true
-                      }
-                    : record
-                )
-              }))
-            }
+            data-testid={`${key}-record-delete`}
+            onClick={() => {
+              updateRecord({ ...record, value: '' })
+            }}
           />
         </KeyValuesContent>
       ) : (
         <KeyValuesContent>
-          <RecordsSubKey>{textKey}</RecordsSubKey>
-          <RecordLink textKey={textKey} value={value} />
+          <RecordsSubKey>{key}</RecordsSubKey>
+          <RecordLink textKey={key} value={value} />
         </KeyValuesContent>
       )}
     </KeyValueItem>
@@ -182,35 +146,37 @@ function Record(props) {
     textKey,
     dataValue,
     validator,
-    getPlaceholder,
     setHasRecord,
     hasRecord,
     canEdit,
     editing,
     setUpdatedRecords,
     recordType,
-    changedRecords
+    changedRecords,
+    updateRecord,
+    record
   } = props
 
+  const { key, value } = record
+
   useEffect(() => {
-    if (dataValue && parseInt(dataValue, 16) !== 0 && !hasRecord) {
+    if (value && parseInt(value, 16) !== 0 && !hasRecord) {
       setHasRecord(true)
     }
-  }, [dataValue, hasRecord, setHasRecord])
+  }, [value, hasRecord, setHasRecord])
 
   return canEdit ? (
     <Editable
       {...props}
-      value={dataValue}
       validator={validator}
-      getPlaceholder={getPlaceholder}
       editing={editing}
       setUpdatedRecords={setUpdatedRecords}
       changedRecords={changedRecords}
       recordType={recordType}
+      {...{ updateRecord, record }}
     />
   ) : (
-    <ViewOnly textKey={textKey} value={dataValue} />
+    <ViewOnly textKey={key} value={dataValue} />
   )
 }
 
@@ -229,55 +195,40 @@ function ViewOnly({ textKey, value, remove }) {
 
 function Records({
   editing,
-  domain,
   canEdit,
   records,
   validator,
-  getPlaceholder,
   title,
   placeholderRecords,
   setUpdatedRecords,
   updatedRecords,
   changedRecords,
-  recordType
+  recordType,
+  updateRecord
 }) {
   const [hasRecord, setHasRecord] = useState(false)
   return (
     <KeyValueContainer hasRecord={hasRecord}>
       <Key>{title}</Key>
       <KeyValuesList>
-        {records &&
-          records.map(({ key, value }) => {
-            if (
-              // Value empty
-              (value === emptyAddress || value === '') &&
-              // Value has not been changed
-              !changedRecords[recordType].find(record => record.key === key) &&
-              // Value is not a placeholder
-              !placeholderRecords.includes(key)
-            ) {
-              return null
-            }
-
-            return (
-              <Record
-                editing={editing}
-                key={key}
-                dataValue={value}
-                validator={validator}
-                getPlaceholder={getPlaceholder}
-                textKey={key}
-                domain={domain}
-                name={domain.name}
-                setHasRecord={setHasRecord}
-                hasRecord={hasRecord}
-                canEdit={canEdit}
-                setUpdatedRecords={setUpdatedRecords}
-                changedRecords={changedRecords}
-                recordType={recordType}
-              />
-            )
-          })}
+        {records?.map(record => {
+          return (
+            <Record
+              editing={editing}
+              validator={validator}
+              setHasRecord={setHasRecord}
+              hasRecord={hasRecord}
+              canEdit={canEdit}
+              setUpdatedRecords={setUpdatedRecords}
+              changedRecords={changedRecords}
+              recordType={recordType}
+              {...{
+                updateRecord,
+                record
+              }}
+            />
+          )
+        })}
       </KeyValuesList>
     </KeyValueContainer>
   )

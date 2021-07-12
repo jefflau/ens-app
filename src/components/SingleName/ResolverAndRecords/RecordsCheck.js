@@ -9,10 +9,7 @@ import {
 
 import mq from 'mediaQuery'
 
-import { RecordsValue } from './ContentHash.js'
-import { isRecordEmpty } from '../../../utils/utils'
 import 'cross-fetch/polyfill'
-import { requestCertificate, isEthSubdomain } from './Certificate.js'
 const Key = styled(DefaultKey)`
   ${mq.small`
     margin-bottom: 0;
@@ -35,66 +32,24 @@ const Delete = styled('span')`
   color: red;
 `
 
-export default function MultipleRecordsCheck({
-  changedRecords,
-  contentCreatedFirstTime,
-  parentName,
-  name
-}) {
-  if (contentCreatedFirstTime && isEthSubdomain(parentName)) {
-    requestCertificate(name)
-  }
+export default function MultipleRecordsCheck({ changedRecords }) {
   return (
     <div>
-      {changedRecords.coins.length > 0 && (
-        <KeyValueContainer>
-          <Key>Addresses</Key>
-          <KeyValuesList>
-            {changedRecords.coins.map(record =>
-              record.value === '' ? (
-                <KeyValueViewOnly
-                  textKey={record.key}
-                  value={record.value}
-                  remove={true}
-                />
-              ) : (
-                <KeyValueViewOnly textKey={record.key} value={record.value} />
-              )
-            )}
-          </KeyValuesList>
-        </KeyValueContainer>
-      )}
-
-      {changedRecords.content !== undefined && (
-        <Contenthash>
-          <Key>Content Hash</Key>
-          <RecordsValue>
-            {isRecordEmpty(changedRecords.content) ? (
-              <Delete>Delete Record</Delete>
+      <KeyValueContainer>
+        <KeyValuesList>
+          {changedRecords.map(record =>
+            record.value === '' ? (
+              <KeyValueViewOnly
+                textKey={record.key}
+                value={record.value}
+                remove={true}
+              />
             ) : (
-              changedRecords.content
-            )}
-          </RecordsValue>
-        </Contenthash>
-      )}
-      {changedRecords.textRecords.length > 0 && (
-        <KeyValueContainer>
-          <Key>Text Records</Key>
-          <KeyValuesList>
-            {changedRecords.textRecords.map(record =>
-              record.value === '' ? (
-                <KeyValueViewOnly
-                  textKey={record.key}
-                  value={record.value}
-                  remove={true}
-                />
-              ) : (
-                <KeyValueViewOnly textKey={record.key} value={record.value} />
-              )
-            )}
-          </KeyValuesList>
-        </KeyValueContainer>
-      )}
+              <KeyValueViewOnly textKey={record.key} value={record.value} />
+            )
+          )}
+        </KeyValuesList>
+      </KeyValueContainer>
     </div>
   )
 }

@@ -3,7 +3,11 @@ import styled from '@emotion/styled/macro'
 import mq from 'mediaQuery'
 import { useTranslation } from 'react-i18next'
 
-import { validateRecord } from '../../../utils/records'
+import {
+  validateRecord,
+  createRecord,
+  getPlaceholder
+} from '../../../utils/records'
 import { useEditable } from '../../hooks'
 import { getOldContentWarning } from './warnings'
 import TEXT_RECORD_KEYS from 'constants/textRecords'
@@ -35,6 +39,17 @@ const ToggleAddRecord = styled('span')`
   &:hover {
     cursor: pointer;
   }
+
+  ${p =>
+    p.pending &&
+    `
+    color: #cccccc;
+    pointer-events: none;
+    
+    &:hover {
+      cursor: initial;
+    }
+  `}
 `
 
 const Select = styled(DefaultSelect)`
@@ -138,63 +153,21 @@ const coinOptions = COIN_LIST.slice()
     value: key
   }))
 
-function TextRecordInput({
-  selectedRecord,
-  updateValue,
-  newValue,
-  selectedKey,
-  setSelectedKey,
-  isValid,
-  isInvalid
-}) {
-  return (
-    <>
-      <Select
-        selectedRecord={selectedKey}
-        handleChange={setSelectedKey}
-        placeholder="Key"
-        addNewKey={true}
-        options={textRecordOptions}
-      />
-      <DetailsItemInput
-        newValue={newValue}
-        dataType={selectedRecord ? selectedRecord.value : null}
-        updateValue={updateValue}
-        isValid={isValid}
-        isInvalid={isInvalid}
-        placeholder={selectedKey ? `Enter ${selectedKey.value}` : ''}
-      />
-    </>
-  )
+const clearInput = (setSelectedRecord, setSelectedKey, updateValue) => {
+  setSelectedRecord(null)
+  setSelectedKey(null)
+  updateValue(null)
 }
 
-function AddressRecordInput({
-  selectedRecord,
-  updateValue,
-  newValue,
-  selectedKey,
-  setSelectedKey,
-  isValid,
-  isInvalid
-}) {
-  return (
-    <>
-      <Select
-        selectedRecord={selectedKey}
-        handleChange={setSelectedKey}
-        placeholder="Coin"
-        options={coinOptions}
-      />
-      <DetailsItemInput
-        newValue={newValue}
-        dataType={selectedRecord ? selectedRecord.value : null}
-        updateValue={updateValue}
-        isValid={isValid}
-        isInvalid={isInvalid}
-        placeholder={selectedKey ? `Enter a ${selectedKey.value} address` : ''}
-      />
-    </>
-  )
+const validate = (selectedKey, newValue, selectedRecord) => {
+  console.log('probe: ', !selectedKey)
+  if (!selectedKey) return false
+
+  return validateRecord({
+    key: selectedKey?.value,
+    value: newValue,
+    contractFn: selectedRecord?.contractFn
+  })
 }
 
 function Editable({
@@ -207,22 +180,14 @@ function Editable({
   startEditing,
   stopEditing,
   updatedRecords,
-  setUpdatedRecords
+  setUpdatedRecords,
+  addRecord,
+  updateRecord,
+  pending
 }) {
-  const [selectedRecord, selectRecord] = useState(null)
-  const [selectedKey, setSelectedKey] = useState(null)
+  const { t } = useTranslation()
   const { state, actions } = useEditable()
-
-  const handleChange = selectedRecord => {
-    selectRecord(selectedRecord)
-  }
-
-  const handleSubmit = e => {
-    e.preventDefault()
-  }
-
   const { uploading, authorized, newValue } = state
-
   const {
     startUploading,
     stopUploading,
@@ -231,6 +196,22 @@ function Editable({
     updateValue
   } = actions
 
+  const [selectedRecord, setSelectedRecord] = useState(null)
+  const [selectedKey, setSelectedKey] = useState(null)
+
+  const handleChange = selectedRecord => {
+    if (selectedRecord.contractFn === 'setContenthash') {
+      setSelectedKey('content')
+    } else {
+      setSelectedKey(null)
+    }
+    setSelectedRecord(selectedRecord)
+  }
+
+  const handleSubmit = e => {
+    e.preventDefault()
+  }
+
   const args = {
     type: selectedRecord && selectedRecord.value ? selectedRecord.value : null,
     value: newValue,
@@ -238,70 +219,23 @@ function Editable({
     selectedKey: selectedKey && selectedKey.value
   }
 
-  const isValid =
-    selectedRecord && selectedRecord.value ? validateRecord(args) : false
+  const isValid = validate(selectedKey, newValue, selectedRecord)
 
-  function saveRecord(selectedRecord, selectedKey, newValue) {
-    function createRecordObj({
-      selectedRecord,
-      selectedKey,
-      newValue,
-      records
-    }) {
-      console.log({
-        selectedRecord,
-        selectedKey,
-        newValue,
-        records
-      })
-      if (selectedRecord.value === 'content') {
-        return newValue
-      } else {
-        const exists = records[selectedRecord.value].find(
-          record => record.key === selectedKey.value
-        )
+  console.log('selectedRecord: ', selectedRecord)
+  console.log('selectedKey: ', selectedKey)
+  console.log('newValue: ', newValue)
+  console.log('isValid: ', isValid)
 
-        if (exists) {
-          return records[selectedRecord.value].map(record =>
-            record.key === selectedKey.value
-              ? { ...record, value: newValue }
-              : record
-          )
-        } else {
-          return [
-            ...records[selectedRecord.value],
-            { key: selectedKey.value, value: newValue }
-          ]
-        }
-      }
-    }
-
-    setUpdatedRecords(records => {
-      const newRecord = createRecordObj({
-        selectedRecord,
-        selectedKey,
-        newValue,
-        records
-      })
-      return { ...records, [selectedRecord.value]: newRecord }
-    })
-    setSelectedKey(null)
-    selectRecord(null)
-    updateValue('')
-  }
-
-  const { t } = useTranslation()
-  const isInvalid = newValue !== '' && !isValid
   return (
     <>
       <RecordsTitle>
         {t('singleName.record.title')}
         {editing ? (
-          <ToggleAddRecord onClick={stopEditing}>
+          <ToggleAddRecord onClick={stopEditing} pending={pending}>
             Close Add/Edit Record
           </ToggleAddRecord>
         ) : (
-          <ToggleAddRecord onClick={startEditing}>
+          <ToggleAddRecord onClick={startEditing} pending={pending}>
             Add/Edit Record
           </ToggleAddRecord>
         )}
@@ -310,136 +244,59 @@ function Editable({
         <AddRecordForm onSubmit={handleSubmit}>
           <Row>
             <Select
-              selectedRecord={selectedRecord}
+              selectedOption={selectedRecord}
               handleChange={handleChange}
               placeholder="Add record"
               options={emptyRecords}
             />
-            {selectedRecord && selectedRecord.value === 'coins' ? (
-              <AddressRecordInput
-                selectedRecord={selectedRecord}
-                newValue={newValue}
-                updateValue={updateValue}
-                selectedKey={selectedKey}
-                setSelectedKey={setSelectedKey}
-                isValid={isValid}
-                isInvalid={isInvalid}
+            {selectedRecord?.value === 'coins' && (
+              <Select
+                selectedRecord={selectedKey}
+                handleChange={setSelectedKey}
+                placeholder="Coin"
+                options={coinOptions}
               />
-            ) : selectedRecord &&
-              uploading &&
-              authorized &&
-              selectedRecord.value === 'content' ? (
-              <Upload updateValue={updateValue} newValue={newValue} />
-            ) : selectedRecord &&
-              uploading &&
-              !authorized &&
-              selectedRecord.value === 'content' ? (
-              <IpfsLogin startAuthorizing={startAuthorizing} />
-            ) : selectedRecord && selectedRecord.value === 'content' ? (
-              <>
-                <DetailsItemInput
-                  newValue={newValue}
-                  dataType={selectedRecord ? selectedRecord.value : null}
-                  contentType={domain.contentType}
-                  updateValue={updateValue}
-                  isValid={isValid}
-                  isInvalid={isInvalid}
-                />
-                {/* <UploadBtn
-                  data-testid="upload"
-                  type="hollow"
-                  onClick={startUploading}
-                >
-                  New Upload
-                </UploadBtn> */}
-              </>
-            ) : selectedRecord && selectedRecord.value === 'address' ? (
-              <AddressInput
-                provider={
-                  window.ethereum || window.web3 || 'http://localhost:8545'
-                }
-                onResolve={({ address }) => {
-                  if (address) {
-                    updateValue(address)
-                  } else {
-                    updateValue('')
-                  }
-                }}
-                ensAddress={getEnsAddress()}
-              />
-            ) : selectedRecord && selectedRecord.value === 'textRecords' ? (
-              <TextRecordInput
-                selectedRecord={selectedRecord}
-                newValue={newValue}
-                updateValue={updateValue}
-                selectedKey={selectedKey}
-                setSelectedKey={setSelectedKey}
-                isValid={isValid}
-                isInvalid={isInvalid}
-              />
-            ) : null}
-          </Row>
-          {selectedRecord &&
-            uploading &&
-            authorized &&
-            selectedRecord.value === 'content' &&
-            newValue !== '' && (
-              <NewRecordsContainer>
-                <RecordsKey>New IPFS Hash:</RecordsKey>
-                <ContentHashLink
-                  value={newValue}
-                  contentType={domain.contentType}
-                />
-              </NewRecordsContainer>
             )}
-          {uploading && !authorized && selectedRecord.value === 'content' ? (
-            <SaveCancel stopEditing={stopUploading} disabled />
-          ) : selectedRecord ? (
-            <>
-              {uploading && authorized && selectedRecord.value === 'content' ? (
-                <SaveCancelSwitch
-                  warningMessage={getOldContentWarning(
-                    selectedRecord.value,
-                    domain.contentType
-                  )}
-                  isValid={isValid}
-                  newValue={newValue}
-                  startUploading={startUploading}
-                  stopUploading={stopUploading}
-                  stopAuthorizing={stopAuthorizing}
-                />
-              ) : (
-                <AddRecordButton>
-                  <Button
-                    data-testid="save-record"
-                    onClick={() => {
-                      console.log(isValid, 'inside save button')
-                      if (isValid) {
-                        saveRecord(selectedRecord, selectedKey, newValue)
-                      }
-                    }}
-                    type={isValid ? 'primary' : 'disabled'}
-                  >
-                    Save
-                  </Button>
-                </AddRecordButton>
-              )}
-            </>
-          ) : (
-            <AddRecordButton>
-              <Button
-                data-testid="save-record"
-                type={isValid ? 'primary' : 'disabled'}
-                onClick={() => {
-                  if (isValid) {
-                    saveRecord(selectedRecord, selectedKey, newValue)
-                  }
-                }}
-              >
-                Save
-              </Button>
-            </AddRecordButton>
-          )}
+            {selectedRecord?.value === 'textRecords' && (
+              <Select
+                selectedRecord={selectedKey}
+                handleChange={setSelectedKey}
+                placeholder="Key"
+                options={textRecordOptions}
+                addNewKey
+              />
+            )}
+            {selectedRecord?.value && (
+              <DetailsItemInput
+                newValue={newValue || ''}
+                dataType={selectedRecord ? selectedRecord.value : null}
+                updateValue={updateValue}
+                isValid
+                isInvalid={!isValid}
+                placeholder={getPlaceholder(
+                  selectedRecord.contractFn,
+                  selectedKey?.label
+                )}
+              />
+            )}
+          </Row>
+          <AddRecordButton>
+            <Button
+              data-testid="save-record"
+              type={isValid ? 'primary' : 'disabled'}
+              disabled={!isValid}
+              onClick={() => {
+                updateRecord({
+                  key: selectedKey?.value || 'CONTENT',
+                  value: newValue,
+                  contractFn: selectedRecord?.contractFn
+                })
+                clearInput(setSelectedRecord, setSelectedKey, updateValue)
+              }}
+            >
+              Save
+            </Button>
+          </AddRecordButton>
         </AddRecordForm>
       )}
     </>

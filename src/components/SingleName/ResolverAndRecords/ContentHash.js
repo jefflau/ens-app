@@ -1,23 +1,15 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import styled from '@emotion/styled/macro'
 import { useTranslation } from 'react-i18next'
 
-import { validateRecord } from 'utils/records'
 import { emptyAddress } from 'utils/utils'
 import mq from 'mediaQuery'
 
 import { DetailsItem, DetailsKey, DetailsValue } from '../DetailsItem'
-import Upload from '../../IPFS/Upload'
-import IpfsLogin from '../../IPFS/Login'
-import StyledUpload from '../../Forms/Upload'
 import ContentHashLink from '../../Links/ContentHashLink'
-import Pencil from '../../Forms/Pencil'
 import DefaultBin from '../../Forms/Bin'
 import RecordInput from '../RecordInput'
 import CopyToClipBoard from '../../CopyToClipboard/'
-import { useEditable } from '../../hooks'
-import Button from '../../Forms/Button'
 import RequestCertificate from './RequestCertificate'
 import useNetworkInfo from '../../NetworkInformation/useNetworkInfo'
 import { ReactComponent as ExternalLinkIcon } from '../../Icons/externalLink.svg'
@@ -156,68 +148,34 @@ const LinkContainer = styled('a')`
   }
 `
 
-const Uploadable = ({ startUploading, keyName, value }) => {
-  if (value && !value.error) {
-    return (
-      <SecondaryAction>
-        <StyledUpload
-          onClick={startUploading}
-          data-testid={`edit-upload-temporal`}
-        />
-      </SecondaryAction>
-    )
-  }
-  return null
+const hasChange = (changedRecords, key) => {
+  return !!changedRecords.find(el => el.key === key)
 }
-
-const Switch = styled(Button)`
-  margin-bottom: 5px;
-  ${mq.small`
-    margin-right: 20px;
-    margin-bottom: 0px; 
-  `}
-`
 
 const ContentHashEditable = ({
   domain,
   keyName,
-  value,
   type,
-
+  records,
   changedRecords,
-  variableName,
-  account,
   editing,
-  updatedRecords,
-  setUpdatedRecords
+  updateRecord,
+  validator
 }) => {
   const { t } = useTranslation()
-  const { state, actions } = useEditable()
   const { contentType } = domain
-  const { authorized, uploading, newValue } = state
 
-  const {
-    startUploading,
-    stopUploading,
-    startAuthorizing,
-    stopAuthorizing,
-    updateValue
-  } = actions
-
-  const isValid = validateRecord({
-    type,
-    value,
-    contentType: domain.contentType
-  })
-
+  const record = records[0]
+  const value = record?.value
+  const isValid = validator(record)
   const isInvalid = value !== '' && !isValid
-  const hasBeenUpdated = changedRecords.hasOwnProperty('content')
 
   return (
     <>
       <RecordsItem editing={editing} hasRecord={true}>
         <RecordsContent editing={editing}>
-          <RecordsKey>{t(`c.${keyName}`)}</RecordsKey>
+          <RecordsKey>{t(`c.Content`)}</RecordsKey>
+
           {!editing && (
             <RecordsValue editableSmall>
               {value === '' ||
@@ -235,105 +193,35 @@ const ContentHashEditable = ({
             </RecordsValue>
           )}
 
-          {editing ? (
+          {editing && (
             <>
               <EditRecord>
                 <RecordInput
                   testId={`content-record-input${isInvalid ? '-invalid' : ''}`}
                   onChange={event => {
-                    const value = event.target.value
-                    setUpdatedRecords(records => ({
-                      ...records,
-                      content: value
-                    }))
+                    updateRecord({ ...record, value: event.target.value })
                   }}
-                  hasBeenUpdated={hasBeenUpdated}
+                  hasBeenUpdated={hasChange(changedRecords, keyName)}
                   value={value}
                   dataType={type}
                   contentType={domain.contentType}
                   isValid={isValid}
                   isInvalid={isInvalid}
                 />
-                {/* 
-                <Uploadable
-                  startUploading={startUploading}
-                  keyName={keyName}
-                  value={value}
-                />
-                {uploading && !authorized && (
-                  <IpfsLogin startAuthorizing={startAuthorizing} />
-                )}
-
-                {uploading && authorized && (
-                  <>
-                    <Upload
-                      updateValue={value => {
-                        updateValue(value)
-                        setUpdatedRecords(records => {
-                          return {
-                            ...records,
-                            content: value
-                          }
-                        })
-                      }}
-                      newValue={newValue}
-                    />
-                    {value !== '' ? (
-                      <NewRecordsContainer>
-                        <RecordsKey>New IPFS Hash:</RecordsKey>
-                        <ContentHashLink
-                          value={value}
-                          contentType={domain.contentType}
-                        />
-                      </NewRecordsContainer>
-                    ) : (
-                      <NotSet>Not set</NotSet>
-                    )}
-                    {value !== '' && (
-                      <Switch
-                        data-testid="reset"
-                        type="hollow"
-                        onClick={startUploading}
-                      >
-                        New Upload
-                      </Switch>
-                    )}
-                    <Switch
-                      data-testid="switch"
-                      type="hollow"
-                      onClick={stopAuthorizing}
-                    >
-                      Logout
-                    </Switch>
-                    <Switch
-                      data-testid="cancel"
-                      type="hollow"
-                      onClick={stopUploading}
-                    >
-                      Cancel
-                    </Switch>
-                  </>
-                )} */}
               </EditRecord>
+              <Action>
+                <Bin
+                  data-testid={`delete-${type.toLowerCase()}`}
+                  onClick={e => {
+                    e.preventDefault()
+                    updateRecord({ ...record, value: emptyAddress })
+                  }}
+                />
+              </Action>
             </>
-          ) : null}
-          {editing && (
-            <Action>
-              <Bin
-                data-testid={`delete-${type.toLowerCase()}`}
-                onClick={e => {
-                  e.preventDefault()
-                  setUpdatedRecords(records => {
-                    return {
-                      ...records,
-                      content: ''
-                    }
-                  })
-                }}
-              />
-            </Action>
           )}
-          {!editing && <RequestCertificate domain={domain} />}
+
+          {!editing && <RequestCertificate {...{ domain, value }} />}
         </RecordsContent>
       </RecordsItem>
     </>
@@ -373,27 +261,24 @@ function ContentHashLinkWithEthLink({ value, contentType, domain }) {
   )
 }
 
-function ContentHashViewOnly({ keyName, value, type, domain, account }) {
-  const { name, contentType } = domain
-  const { t } = useTranslation()
-  return keyName !== 'Address' && contentType === 'error' ? (
-    ''
-  ) : (
+function ContentHashViewOnly({ domain, account, records }) {
+  const value = records?.length && records[0]
+  const { contentType } = domain
+
+  if (contentType === 'error') return ''
+
+  return (
     <RecordsItem>
       <RecordsContent>
-        <RecordsKey>{t(`c.${keyName}`)}</RecordsKey>
         <RecordsValue>
-          {value !== '' ? (
+          {!!value && value !== '' ? (
             <ContentHashLinkWithEthLink
-              value={value}
-              contentType={contentType}
-              domain={domain}
+              {...{ value: value?.value, contentType, domain }}
             />
           ) : (
             <NotSet>Not set</NotSet>
           )}
         </RecordsValue>
-        <RequestCertificate domain={domain} />
       </RecordsContent>
     </RecordsItem>
   )
@@ -404,17 +289,6 @@ function ContentHash(props) {
   if (canEdit) return <ContentHashEditable {...props} />
 
   return <ContentHashViewOnly {...props} />
-}
-
-ContentHash.propTypes = {
-  keyName: PropTypes.string.isRequired, // key of the record
-  value: PropTypes.string.isRequired, // value of the record (normally hex address)
-  type: PropTypes.string, // type of value. Defaults to address
-  editButton: PropTypes.string, //Edit button text
-  domain: PropTypes.object.isRequired,
-  variableName: PropTypes.string, //can change the variable name for mutation
-  account: PropTypes.string,
-  changedRecords: PropTypes.array
 }
 
 export default ContentHash

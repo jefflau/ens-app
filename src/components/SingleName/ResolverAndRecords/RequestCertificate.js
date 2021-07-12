@@ -25,7 +25,7 @@ const Action = styled('div')`
   `};
 `
 
-export default function RequestCertificate({ domain }) {
+export default function RequestCertificate({ domain, value }) {
   const { networkId } = useNetworkInfo()
   // CloudFlaire only creates certificate if the domain exists on Mainnet
   if (networkId !== 1) return ''
@@ -58,13 +58,14 @@ export default function RequestCertificate({ domain }) {
     if (
       isEthSubdomain(domain.parent) &&
       domain.contentType === 'contenthash' &&
-      domain.content !== emptyAddress
+      domain.content !== emptyAddress &&
+      (value?.includes('ipfs') || value?.includes('ipns'))
     ) {
       checkCertificate(domain.name).then(({ status }) => {
         setRequireCertificate(status === 404)
       })
     }
-  })
+  }, [domain, value])
 
   if (requireCertificate) {
     if (timerRunning) {
