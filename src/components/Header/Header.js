@@ -111,7 +111,6 @@ function HeaderContainer() {
       </Header>
       {hasNonAscii() && (
         <StyledBanner>
-          {/*{t('address.transactionBanner')}*/}
           <StyledBannerInner>
             <p>
               ⚠️ <strong>{t('warnings.homoglyph.title')}</strong>:{' '}

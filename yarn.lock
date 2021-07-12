@@ -1180,11 +1180,6 @@
   resolved "https://registry.yarnpkg.com/@buidlhub/buidlhub-ens-notifications/-/buidlhub-ens-notifications-1.0.3.tgz#708cecde68d8dcad048b2885d6113615837b3a79"
   integrity sha512-JrHcgKGOvbgFyinATTYDTD5ZH1k7r+rWympuNGlp9yLi4prScVz0hzAvJHB7bxUjDbyrdbD5vAJhgjSxi8V31w==
 
-"@burner-wallet/burner-connect-provider@0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@burner-wallet/burner-connect-provider/-/burner-connect-provider-0.1.1.tgz#1eccd2e677cbd2eadf18ce32472bd962659dad5c"
-  integrity sha512-cHA2D/Jtn6QRc3szTwSHlJVxz5xKAW6coZw5OK0pwA7IQkZQmbs8DPIAa/qHYKCh7oP2CGcC0V45QgV18cqx4w==
-
 "@chaitanyapotti/random-id@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@chaitanyapotti/random-id/-/random-id-1.0.3.tgz#f52f647cfe9f79fc7723ea2b01b0ad3889204002"
@@ -1492,6 +1487,11 @@
     "@ensdomains/solsha1" "0.0.3"
     "@openzeppelin/contracts" "^4.1.0"
     dns-packet "^5.2.4"
+
+"@ensdomains/ens-validation@0.0.0":
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/@ensdomains/ens-validation/-/ens-validation-0.0.0.tgz#6f29e0ec19d1052b79b7217e9b4b0f385ecb921c"
+  integrity sha512-hN/FjYTcthuE0ASdcECOLqjE7z9xYM591JMajwDxHfHHOwx2SO1OflziCS7koPxpxVk7WSPLCCVgtTYa1tBZ2w==
 
 "@ensdomains/mock@^2.0.34":
   version "2.0.34"
@@ -8953,18 +8953,6 @@ eth-lib@^0.1.26:
     ws "^3.0.0"
     xhr-request-promise "^0.1.2"
 
-eth-provider@0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/eth-provider/-/eth-provider-0.6.1.tgz#795c69205f023678ed79f9139233426afdbc479c"
-  integrity sha512-0sBNzOBEUSQmo5zHSQ/os25ULh+LeoTTK5nGxiTJpXo8R0OOxOzYiVWLfAWuIuYLhzT1ma5A1wPZWMt+gPGeoA==
-  dependencies:
-    ethereum-provider "0.2.2"
-    events "3.2.0"
-    oboe "2.1.5"
-    uuid "8.3.2"
-    ws "7.4.3"
-    xhr2-cookies "1.1.0"
-
 eth-query@^2.0.2, eth-query@^2.1.0, eth-query@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/eth-query/-/eth-query-2.1.2.tgz#d6741d9000106b51510c72db92d6365456a6da5e"
@@ -9104,13 +9092,6 @@ ethereum-private-key-to-public-key@0.0.2:
   dependencies:
     meow "^5.0.0"
     secp256k1 "^3.7.1"
-
-ethereum-provider@0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/ethereum-provider/-/ethereum-provider-0.2.2.tgz#37ba0674a6c05915b51afb8e6d13e9bd166f1c33"
-  integrity sha512-147DaU4nccfYYCAKhrILdgSWTjjZX2NnmcZJx12frM+cNw8cGTbpQPpi4xApagIk7HlN16ZncCP5uyOiZN7n3g==
-  dependencies:
-    events "3.2.0"
 
 ethereum-public-key-to-address@0.0.1:
   version "0.0.1"
@@ -9516,7 +9497,7 @@ eventemitter3@^4.0.0:
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
   integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
 
-events@3.2.0, events@^3.0.0, events@^3.1.0:
+events@^3.0.0, events@^3.1.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/events/-/events-3.2.0.tgz#93b87c18f8efcd4202a461aec4dfc0556b639379"
   integrity sha512-/46HWwbfCX2xTawVfkKLGxMifJYQBWMwY1mjywRtb4c9x8l5NP3KoJtnIOiL1hfdRkIuYhETxQlo62IF8tcnlg==
@@ -19954,15 +19935,15 @@ uuid@7.0.2:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-7.0.2.tgz#7ff5c203467e91f5e0d85cfcbaaf7d2ebbca9be6"
   integrity sha512-vy9V/+pKG+5ZTYKf+VcphF5Oc6EFiu3W8Nv3P3zIh0EqVI80ZxOzuPfe9EHjkFNvf8+xuTHVeei4Drydlx4zjw==
 
-uuid@8.3.2, uuid@^8.3.0:
-  version "8.3.2"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
-  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
-
 uuid@^3.1.0, uuid@^3.3.2, uuid@^3.4.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
+
+uuid@^8.3.0:
+  version "8.3.2"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
+  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
 
 uuidv4@6.0.6:
   version "6.0.6"
@@ -21517,11 +21498,6 @@ ws@7.3.0:
   version "7.3.0"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.3.0.tgz#4b2f7f219b3d3737bc1a2fbf145d825b94d38ffd"
   integrity sha512-iFtXzngZVXPGgpTlP1rBqsUK82p9tKqsWRPg5L56egiljujJT3vGAYnHANvFxBieXrTFavhzhxW52jnaWV+w2w==
-
-ws@7.4.3:
-  version "7.4.3"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.3.tgz#1f9643de34a543b8edb124bdcbc457ae55a6e5cd"
-  integrity sha512-hr6vCR76GsossIRsr8OLR9acVVm1jyfEWvhbNjtgPOrfvAlKzvyeg/P6r8RuDjRyrcQoPQT7K0DGEPc7Ae6jzA==
 
 ws@^3.0.0:
   version "3.3.3"

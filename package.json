@@ -12,6 +12,7 @@
     "@ensdomains/mock": "^2.0.40",
     "@ensdomains/react-ens-address": "^0.0.27",
     "@ensdomains/ui": "^3.0.80",
+    "@ensdomains/ens-validation": "0.0.0",
     "@gnosis.pm/safe-apps-provider": "^0.2.2",
     "@myetherwallet/mewconnect-web-client": "^2.1.11",
     "@portis/web3": "^2.0.0-beta.59",
@@ -64,7 +65,7 @@
     "web3modal-dynamic-import": "1.11.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node --max_old_space_size=16384 node_modules/.bin/react-scripts start",
     "start:ipfs": "REACT_APP_IPFS=True PUBLIC_URL='.' yarn start",
     "start:test": "REACT_APP_STAGE=local yarn start",
     "start:test:ipfs": "REACT_APP_STAGE=local yarn start:ipfs",
